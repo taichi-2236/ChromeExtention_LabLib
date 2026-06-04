@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "LabLib - 論文ライブラリ",
+  "version": "1.0.0",
+  "description": "論文の保存・管理・閲覧をサイドパネルで行えるChrome拡張機能",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "tabs",
+    "activeTab",
+    "downloads"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "LabLib を開く",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
