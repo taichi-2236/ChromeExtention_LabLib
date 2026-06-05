@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "LabLib - 論文ライブラリ",
   "version": "1.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAntfA2thMOmQ7hFsDdg1GyDJwKMPbbVDfFNQgiIhPGwwYywYTS5urhP1HYBFr5rBx9Is5WGrGYOKhwphmcw3m6nTqnMNmq10vcoG8ToTfsMLajXrUn9X7T+hZ30nvNcNlnRdKufQRCiYn9NwP8eUA/0SKL6By10yE7uD5xfKRahNF938Z/prvXxoW9tadk0By0AqrY2nrHgerEpQaaAIKwpsGDVk6Nl0xXi0ZOZeSvUdGwhlrHMZGZ9L6/0LQdDAxUTS6Add//n3kr+3V1SvgK7xZk18rBQK8Ut9i+JZm1brvyV01lt3fSQQhBucZK988kRJTHxy/GIQIY/ES4MpazQIDAQAB",
   "description": "論文の保存・管理・閲覧をサイドパネルで行えるChrome拡張機能",
   "permissions": [
     "sidePanel",
