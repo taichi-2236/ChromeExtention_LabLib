@@ -20,13 +20,19 @@
         </svg>
         <h1 class="app-title">LabLib</h1>
       </div>
-      <button id="btn-save-paper" class="btn-primary" title="開いているタブの論文を保存">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>保存</span>
-      </button>
+      <div class="header-actions">
+        <div class="storage-usage-container" title="ストレージ使用量 (chrome.storage.sync)">
+          <span class="storage-label">使用容量：</span>
+          <span id="storage-usage" class="storage-usage">0%</span>
+        </div>
+        <button id="btn-save-paper" class="btn-primary" title="開いているタブの論文を保存">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>保存</span>
+        </button>
+      </div>
     </div>
 
     <!-- 検索バー -->
@@ -45,12 +51,12 @@
   <!-- ===== ツールバー (一括操作) ===== -->
   <div id="toolbar" class="toolbar">
     <div class="toolbar-left">
-      <label class="checkbox-wrapper select-all-wrapper" title="すべて選択">
+      <label class="checkbox-wrapper select-all-wrapper" title="全選択">
         <input type="checkbox" id="checkbox-select-all">
         <span class="checkbox-custom"></span>
-        <span class="select-all-label">すべて選択</span>
+        <span class="select-all-label">全選択</span>
       </label>
-      <span id="selected-count" class="selected-count">0件選択中</span>
+      <span id="selected-count" class="selected-count">0件<br>選択中</span>
     </div>
     <div class="toolbar-right">
       <button id="btn-bulk-reference" class="btn-toolbar" title="参考文献リストを作成">

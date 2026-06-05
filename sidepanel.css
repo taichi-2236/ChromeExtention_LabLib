@@ -19,8 +19,8 @@
   --surface-border-focus: rgba(99, 102, 241, 0.45);
 
   /* アクセントカラー */
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #5457e5;
+  --accent-primary: #162b71;
+  --accent-primary-hover: #1214a1;
   --accent-primary-glow: rgba(99, 102, 241, 0.15);
   --accent-primary-subtle: rgba(99, 102, 241, 0.08);
   --accent-secondary: #0d9488;
@@ -137,6 +137,41 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-md);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.storage-usage-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.storage-label {
+  font-weight: 500;
+}
+
+.storage-usage {
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.storage-usage.warning {
+  color: var(--accent-warning);
+}
+
+.storage-usage.danger {
+  color: var(--accent-danger);
 }
 
 .logo-area {
@@ -392,6 +427,8 @@ body {
   font-size: var(--font-size-xs);
   color: var(--text-tertiary);
   font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
 }
 
 .select-all-wrapper {

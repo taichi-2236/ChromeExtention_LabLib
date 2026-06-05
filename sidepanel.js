@@ -193,6 +193,54 @@
   // ユーティリティ
   // ===========================================
 
+  /** 文字列のハッシュ値からHSLカラーを生成する */
+  function getTagStyles(tagName) {
+    let hash = 0;
+    for (let i = 0; i < tagName.length; i++) {
+      hash = tagName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = Math.abs(hash) % 360;
+    const bg = `hsl(${h}, 70%, 93%)`;
+    const text = `hsl(${h}, 75%, 38%)`;
+    const border = `hsl(${h}, 70%, 85%)`;
+    return { bg, text, border };
+  }
+
+  /** 要素にタグのスタイルを適用する */
+  function applyTagStyle(el, tagName) {
+    const styles = getTagStyles(tagName);
+    el.style.backgroundColor = styles.bg;
+    el.style.color = styles.text;
+    el.style.borderColor = styles.border;
+  }
+
+  /** ストレージ使用率を更新 */
+  function updateStorageUsage() {
+    try {
+      chrome.storage.sync.getBytesInUse(null, (bytesInUse) => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError);
+          return;
+        }
+        const maxBytes = 102400; // chrome.storage.sync の合計制限
+        const percent = Math.min(100, Math.round((bytesInUse / maxBytes) * 100));
+        
+        const usageEl = $('#storage-usage');
+        if (usageEl) {
+          usageEl.textContent = `${percent}%`;
+          usageEl.className = 'storage-usage';
+          if (percent >= 90) {
+            usageEl.classList.add('danger');
+          } else if (percent >= 70) {
+            usageEl.classList.add('warning');
+          }
+        }
+      });
+    } catch (e) {
+      console.error('ストレージ容量の取得に失敗:', e);
+    }
+  }
+
   /** トースト通知を表示 */
   function showToast(message, type = 'success') {
     const toast = document.createElement('div');
@@ -202,7 +250,15 @@
 
     setTimeout(() => {
       toast.classList.add('toast-exit');
-      toast.addEventListener('animationend', () => toast.remove());
+      let removed = false;
+      const removeToast = () => {
+        if (!removed) {
+          removed = true;
+          toast.remove();
+        }
+      };
+      toast.addEventListener('animationend', removeToast);
+      setTimeout(removeToast, 400); // 予備のタイムアウトで確実に消去
     }, 2500);
   }
 
@@ -306,6 +362,12 @@
       const span = document.createElement('span');
       span.className = 'tag';
       span.textContent = tagName;
+      applyTagStyle(span, tagName);
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dom.searchInput.value = tagName;
+        handleSearch();
+      });
       tagsDiv.appendChild(span);
     });
 
@@ -363,7 +425,7 @@
 
   function updateSelectedCount() {
     const count = state.selectedIds.size;
-    dom.selectedCount.textContent = `${count}件選択中`;
+    dom.selectedCount.innerHTML = `${count}件<br>選択中`;
   }
 
   function handleSelectAll() {
@@ -433,6 +495,7 @@
       const span = document.createElement('span');
       span.className = 'tag tag-removable';
       span.innerHTML = `${escapeHtml(tagName)}<span class="tag-remove">&times;</span>`;
+      applyTagStyle(span, tagName);
       span.querySelector('.tag-remove').addEventListener('click', () => {
         modalTags = modalTags.filter(t => t !== tagName);
         renderModalTags();
@@ -516,6 +579,7 @@
       showToast('論文を保存しました');
       closeSaveModal();
       renderPaperList();
+      updateStorageUsage();
     } catch (err) {
       console.error('保存エラー:', err);
       state.papers.shift();
@@ -569,6 +633,13 @@
       const span = document.createElement('span');
       span.className = 'tag';
       span.textContent = name;
+      applyTagStyle(span, name);
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDetailPanel();
+        dom.searchInput.value = name;
+        handleSearch();
+      });
       dom.detailTags.appendChild(span);
     });
     if (tagNames.length === 0) {
@@ -616,6 +687,7 @@
 
     renderPaperList();
     showToast('タイトルを更新しました');
+    updateStorageUsage();
   }
 
   /** 詳細パネル: タグ編集開始 */
@@ -639,6 +711,7 @@
       const span = document.createElement('span');
       span.className = 'tag tag-removable';
       span.innerHTML = `${escapeHtml(tagName)}<span class="tag-remove">&times;</span>`;
+      applyTagStyle(span, tagName);
       span.querySelector('.tag-remove').addEventListener('click', () => {
         detailTags = detailTags.filter(t => t !== tagName);
         renderDetailEditTags();
@@ -674,6 +747,7 @@
 
     renderPaperList();
     showToast('タグを更新しました');
+    updateStorageUsage();
   }
 
 
@@ -716,6 +790,7 @@
     await saveStorage(state.papers, state.tags);
     renderPaperList();
     showToast(`${count}件の論文を削除しました`);
+    updateStorageUsage();
   }
 
   /** 単一論文の削除 */
@@ -733,6 +808,7 @@
     closeDetailPanel();
     renderPaperList();
     showToast('論文を削除しました');
+    updateStorageUsage();
   }
 
   /** 参考文献リストを生成 */
@@ -967,6 +1043,7 @@
 
     bindEvents();
     renderPaperList();
+    updateStorageUsage();
   }
 
   // DOM準備後に初期化
