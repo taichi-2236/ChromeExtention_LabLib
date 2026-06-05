@@ -271,7 +271,16 @@
         </button>
       </div>
       <div class="modal-body">
-        <textarea id="reference-output" class="reference-textarea" readonly placeholder="選択した論文から参考文献リストが生成されます"></textarea>
+        <div class="form-group" style="margin-bottom: var(--space-xs);">
+          <label class="form-label" for="reference-format">出力フォーマット</label>
+          <select id="reference-format" class="form-input" style="width: 100%; cursor: pointer;">
+            <option value="plain">プレーンテキスト</option>
+            <option value="bibtex">BibTeX</option>
+            <option value="apa">APA形式</option>
+            <option value="ieee">IEEE形式</option>
+          </select>
+        </div>
+        <textarea id="reference-output" class="reference-textarea" style="min-height: 180px;" readonly placeholder="選択した論文から参考文献リストが生成されます"></textarea>
       </div>
       <div class="modal-footer">
         <button id="btn-copy-reference" class="btn-primary">

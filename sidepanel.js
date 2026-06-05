@@ -136,6 +136,7 @@
 
   const dom = {
     // ヘッダー
+    storageUsageContainer: $('.storage-usage-container'),
     btnSave: $('#btn-save-paper'),
     searchInput: $('#search-input'),
     btnClearSearch: $('#btn-clear-search'),
@@ -180,6 +181,7 @@
 
     // 参考文献モーダル
     referenceOverlay: $('#reference-modal-overlay'),
+    referenceFormat: $('#reference-format'),
     referenceOutput: $('#reference-output'),
     btnReferenceClose: $('#btn-reference-close'),
     btnCopyReference: $('#btn-copy-reference'),
@@ -234,6 +236,16 @@
           } else if (percent >= 70) {
             usageEl.classList.add('warning');
           }
+        }
+
+        // ツールチップ設定: ストレージ：～KB / 102.4KB（～件保存中）
+        if (dom.storageUsageContainer) {
+          const kbUsed = (bytesInUse / 1024).toFixed(1);
+          const count = state.papers.length;
+          dom.storageUsageContainer.setAttribute(
+            'title',
+            `ストレージ：${kbUsed}KB / 102.4KB（${count}件保存中）`
+          );
         }
       });
     } catch (e) {
@@ -811,6 +823,48 @@
     updateStorageUsage();
   }
 
+  /** 参考文献出力のテキストを更新 */
+  function updateReferenceOutput() {
+    const selected = state.papers
+      .filter(p => state.selectedIds.has(p[P_ID]))
+      .map(p => expandPaper(p, state.tags));
+
+    const format = dom.referenceFormat.value;
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const dateStr = `${yyyy}-${mm}-${dd}`;
+
+    const months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
+    const ieeeDate = `${months[today.getMonth()]} ${today.getDate()}, ${yyyy}`;
+
+    const formattedList = selected.map((paper, i) => {
+      const num = i + 1;
+      const title = paper.title || '(無題)';
+      const url = paper.url || '';
+
+      switch (format) {
+        case 'bibtex':
+          const key = `${paper.id || 'paper'}_ref`;
+          return `@misc{${key},\n  title = {${title}},\n  howpublished = {\\url{${url}}},\n  note = {Accessed: ${dateStr}}\n}`;
+
+        case 'apa':
+          return `${title}. Retrieved from ${url}`;
+
+        case 'ieee':
+          return `[${num}] "${title}," ${url} (accessed ${ieeeDate}).`;
+
+        case 'plain':
+        default:
+          return `[${num}] ${title}. ${url}`;
+      }
+    });
+
+    const joinStr = (format === 'bibtex') ? '\n\n' : '\n';
+    dom.referenceOutput.value = formattedList.join(joinStr);
+  }
+
   /** 参考文献リストを生成 */
   function generateReferenceList() {
     if (state.selectedIds.size === 0) {
@@ -818,15 +872,7 @@
       return;
     }
 
-    const selected = state.papers
-      .filter(p => state.selectedIds.has(p[P_ID]))
-      .map(p => expandPaper(p, state.tags));
-
-    const lines = selected.map((paper, i) => {
-      return `[${i + 1}] ${paper.title}. ${paper.url}`;
-    });
-
-    dom.referenceOutput.value = lines.join('\n');
+    updateReferenceOutput();
     dom.referenceOverlay.style.display = '';
   }
 
@@ -1011,6 +1057,9 @@
     dom.referenceOverlay.addEventListener('click', (e) => {
       if (e.target === dom.referenceOverlay) closeReferenceModal();
     });
+
+    // 参考文献モーダル: フォーマット切り替え
+    dom.referenceFormat.addEventListener('change', updateReferenceOutput);
 
     // 参考文献モーダル: コピー
     dom.btnCopyReference.addEventListener('click', () => {
